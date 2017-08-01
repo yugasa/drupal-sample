@@ -1,0 +1,98 @@
+<?php 
+
+/*
+* myblock_permission() function
+* use to create a new permission so we can control who has access to our page.
+*/
+
+function myblock_permission(){
+ return array(
+   'edit my settings' => array(
+     'title' => t('Edit My Settings'), 
+     'description' => t('Edit My Custom Settings Page'),
+  ),
+ );
+}
+
+/*
+* myblock_menu() function
+* use to add our page to the menu system.
+*/
+
+function myblock_menu(){
+ $result = array();
+ $result['manage/mysettings'] = array(
+  'title' => 'My Settings', // Title of our page
+  'description'=> 'My Custom Settings', // Description of our page
+  'page callback' => 'drupal_get_form',
+  'page arguments' => array('myblock_form'), // function that will returns the results to our page
+  'access arguments' => array('edit my settings'), // permission to access this page
+  'type' => MENU_NORMAL_ITEM, // type of menu item
+ );
+ 
+ return $result;
+}
+
+/*
+* myblock_menu() function
+* use to create our form using Drupal's Form 
+*/
+
+function myblock_form() {
+ 
+$form = array();
+ $form['myblock_my_name'] = array(
+  '#type' => 'textfield',
+  '#title' => t('My Name'),
+  '#default_value' => variable_get('myblock_my_name', ''),
+  '#required' => TRUE,
+ );
+ $form['myblock_about_me'] = array(
+  '#type' => 'textarea',
+  '#title' => t('About Me'),
+  '#default_value' => variable_get('myblock_about_me', ''),
+  '#required' => TRUE,
+ );
+ 
+ $form['submit'] = array(
+  '#type' => 'submit',
+  '#value' => 'Submit',
+ );
+ 
+ $form['#submit'][] = 'system_settings_form_submit';
+ return $form;
+}
+
+
+/*
+* myblock_block_info() function
+* use to to tell Drupal about our new block.
+*/
+
+
+function myblock_block_info() {
+ $blocks['myblock_about_me'] = array(
+  'info' => t('About Me'),
+ );
+ return $blocks;
+}
+
+
+/*
+* myblock_block_view() function
+* use to to define the content for our block.
+*/
+
+
+function myblock_block_view($delta='') {
+ $block = array();
+ switch ($delta) {
+  case 'myblock_about_me':
+   $block['subject'] = variable_get('myblock_my_title', ''); // set the subject of the block to our myblock_my_title variable
+   $block['content'] = variable_get('myblock_about_me', ''); // set the content of the block to our myblock_about_me variable
+   break;
+ }
+ return $block;
+}
+
+?>
